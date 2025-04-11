@@ -1,9 +1,9 @@
 
-with open("maze.txt", "r") as file:
+with open("data\labyrinthe0.txt", "r") as file:
     lines = file.readlines()
     (m, n) = lines[0].split(" ")
     m = int(m)
-    n = int(n) 
+    n = int(n)
 
 red =   "255 0   0   "
 white = "255 255 255 "
