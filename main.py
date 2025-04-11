@@ -1,5 +1,7 @@
 
-with open("data\\labyrinthe9.txt", "r") as file:
+input = "data\\labyrinthe9.txt"
+
+with open(input, "r") as file:
     lines = file.readlines()
     (x, y) = lines[0].split(" ")
     y = int(y)
@@ -73,7 +75,7 @@ for i,j in traps:
 
 
 
-with open("ouput_maze.ppm", "w") as file:
+with open(f"mazes\\{input[4:16]}_mase.ppm", "w") as file:
     string = ""
     file.write("P3\n")
     file.write(f"{3*x} {3*y}\n")
