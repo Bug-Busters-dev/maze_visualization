@@ -1,5 +1,5 @@
 
-with open("data\\labyrinthe1.txt", "r") as file:
+with open("data\\labyrinthe9.txt", "r") as file:
     lines = file.readlines()
     (x, y) = lines[0].split(" ")
     y = int(y)
@@ -9,24 +9,25 @@ red =   "255 0   0   "
 white = "255 255 255 "
 schwarz = "0   0   0   "
 
-maze1 = [[[[white for i in range(3)]for i in range(3)] for i in range(y)]for i in range(x)]
+maze1 = [[[[white for _ in range(3)]for _ in range(3)] for _ in range(y)]for _ in range(x)]
 print(len(maze1), len(maze1[0]))
 
 def render_4d_list(data):
-    output = ""
+    x = len(data)
+    y = len(data[0])
+    
+    output_lines = []
 
-    for block in data:  # Erste Dimension
-        block_rows = [""] * len(block[0])  # 3 Zeilen pro Block
+    # Für jede Zeile im Gesamtbild (also jedes 3x3-Feld in y-Richtung)
+    for j in range(y):
+        for sub_row in range(3):  # Für jede Zeile im 3x3-Feld
+            line = []
+            for i in range(x):
+                row = data[i][j][sub_row]  # Die entsprechende Subzeile aus dem 3x3 Feld
+                line.extend(row)
+            output_lines.append(" ".join(line))  # Zeile als String mit Leerzeichen zwischen RGB-Werten
 
-        for row in block:  # Zweite Dimension
-            for i, col in enumerate(row):  # Dritte Dimension – 3 Spalten
-                numbers = ' '.join(str(n) for n in col)
-                block_rows[i] += numbers + " "  # Die Spalten nebeneinander setzen
-
-        # Zusammenfügen der Zeilen für diesen Block und nach der ersten Dimension einen Zeilenumbruch einfügen
-        output += '\n'.join(block_rows) + " \n"
-
-    return output.strip()
+    return "\n".join(output_lines)
 
 
 
@@ -35,34 +36,47 @@ number_traps = int(lines[maze_description_len+1])
 
 traps = [[int(part.replace("\n", "")) for part in trap.split(" ")] for trap in lines[maze_description_len+2:maze_description_len+2+number_traps]]
 
-walls_v = [[int(lines[i].split(" ")[j].replace("\n", "")) for j in range(x-1)] + [1] for i in range(y)]
+# Zeile, ab der die Wände beginnen
+start_line = 1  # Beispiel: Wände beginnen in der zweiten Zeile (Index 1)
 
-walls_h = [[int(lines[i].split(" ")[j].replace("\n", "")) for j in range(x)] for i in range(y-1)] + [[1 for _ in range(y)]]
+# Einlesen der vertikalen Wände: m Zeilen mit n-1 Einträgen
+walls_v = [[int(lines[start_line + i].split(" ")[j]) for j in range(x-1)] for i in range(y)]
+
+# Einlesen der horizontalen Wände: m-1 Zeilen mit n Einträgen
+walls_h = [[int(lines[start_line + y + i].split(" ")[j]) for j in range(x)] for i in range(y-1)]
+
+# Formatieren der Wände
+formatted_walls_v = [[walls_v[j][i] for j in range(y)] for i in range(x-1)] + [[1 for _ in range(y)]]
+formatted_walls_h = [[walls_h[j][i] for j in range(y-1)] + [1] for i in range(x)]
+
+# Ausgabe der formatierten Wände
+print("Vertikale Wände:", formatted_walls_v)
+print("Horizontale Wände:", formatted_walls_h)
 
 for i in range(x):
     for j in range(y):
-        if walls_v[i][j] == 1:
+        if formatted_walls_v[i][j] == 1:
             maze1[i][j][0][2] = schwarz
             maze1[i][j][1][2] = schwarz
             maze1[i][j][2][2] = schwarz
-        if walls_h[i][j] == 1:
+        if formatted_walls_h[i][j] == 1:
             maze1[i][j][2][0] = schwarz
             maze1[i][j][2][1] = schwarz
             maze1[i][j][2][2] = schwarz
 
-for x,y in traps:
-    maze1[x][y][1][1] = red
-    maze1[x][y][0][0] = red
-    maze1[x][y][2][0] = red
-    maze1[x][y][0][2] = red
-    maze1[x][y][2][2] = red
+for i,j in traps:
+    maze1[i][j][1][1] = red
+    maze1[i][j][0][0] = red
+    maze1[i][j][2][0] = red
+    maze1[i][j][0][2] = red
+    maze1[i][j][2][2] = red
 
 
 
 with open("ouput_maze.ppm", "w") as file:
     string = ""
     file.write("P3\n")
-    file.write(f"{y*3} {x*3}\n")
+    file.write(f"{3*x} {3*y}\n")
     file.write("255\n")
 
 
