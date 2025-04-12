@@ -61,19 +61,6 @@ def process_maze(start_line, offset_x):
         maze[0 + offset_x][j][1][0] = schwarz
         maze[0 + offset_x][j][2][0] = schwarz
         
-    # Draw start
-    maze[0 + offset_x][0][1][1] = pink
-    maze[0 + offset_x][0][1][0] = pink
-    maze[0 + offset_x][0][1][2] = pink
-    maze[0 + offset_x][0][0][1] = pink
-    maze[0 + offset_x][0][2][1] = pink
-    
-    # Draw end
-    maze[x - 1 + offset_x][y - 1][1][1] = mintgrün
-    maze[x - 1 + offset_x][y - 1][1][0] = mintgrün
-    maze[x - 1 + offset_x][y - 1][1][2] = mintgrün
-    maze[x - 1 + offset_x][y - 1][0][1] = mintgrün
-    maze[x - 1 + offset_x][y - 1][2][1] = mintgrün
  
     # Draw traps
     formatted_traps = [[0 for _ in range(y)] for _ in range(x)]
@@ -150,6 +137,25 @@ def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1
                         maze1[akk_x + offset_x][akk_y][1][0] = grün
                         maze1[akk_x-1 + offset_x][akk_y][1][2] = grün
                         akk_x -= 1
+                        
+def draw_start_and_end(maze, x, y, offset_x, start_coords, end_coords):
+    start_x, start_y = start_coords
+    end_x, end_y = end_coords
+
+    # Draw start
+    maze[start_x + offset_x][start_y][1][1] = pink
+    maze[start_x + offset_x][start_y][1][0] = pink
+    maze[start_x + offset_x][start_y][1][2] = pink
+    maze[start_x + offset_x][start_y][0][1] = pink
+    maze[start_x + offset_x][start_y][2][1] = pink
+
+    # Draw end
+    maze[end_x + offset_x][end_y][1][1] = mintgrün
+    maze[end_x + offset_x][end_y][1][0] = mintgrün
+    maze[end_x + offset_x][end_y][1][2] = mintgrün
+    maze[end_x + offset_x][end_y][0][1] = mintgrün
+    maze[end_x + offset_x][end_y][2][1] = mintgrün
+
 
 # Process the first maze and draw the path
 next_start_line, formatted_walls_h, formatted_walls_v, formatted_traps = process_maze(1, 0)
@@ -158,6 +164,19 @@ draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze, 0)
 # Process the second maze and draw the path
 next_start_line, formatted_walls_h, formatted_walls_v, formatted_traps = process_maze(next_start_line, x + 2)
 draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze, x + 2)
+
+if len(lines) > next_start_line:
+    start_coords = [int(lines[next_start_line].split(" ")[0]), int(lines[next_start_line].split(" ")[1])]
+    end_coords = [int(lines[next_start_line + 1].split(" ")[0]), int(lines[next_start_line + 1].split(" ")[1])]
+
+    # Draw start and end points
+    draw_start_and_end(maze, x, y, 0, start_coords, end_coords)
+    draw_start_and_end(maze, x, y, x + 2, start_coords, end_coords)
+else:
+    start_coords = [0, 0]
+    end_coords = [x-1, y-1]
+    draw_start_and_end(maze, x, y, 0, start_coords, end_coords)
+    draw_start_and_end(maze, x, y, x + 2, start_coords, end_coords)
 
 def render_4d_list(data):
     x = len(data)
