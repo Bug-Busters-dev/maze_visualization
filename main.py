@@ -1,5 +1,5 @@
 
-input = "data\\labyrinthe9.txt"
+input = "data\\labyrinthe0.txt"
 
 with open(input, "r") as file:
     lines = file.readlines()
@@ -10,6 +10,7 @@ with open(input, "r") as file:
 red =   "255 0   0   "
 white = "255 255 255 "
 schwarz = "0   0   0   "
+grün =  "0   255 0   "
 
 maze1 = [[[[white for _ in range(3)]for _ in range(3)] for _ in range(y)]for _ in range(x)]
 print(len(maze1), len(maze1[0]))
@@ -65,6 +66,8 @@ for i in range(x):
             maze1[i][j][2][0] = schwarz
             maze1[i][j][2][1] = schwarz
             maze1[i][j][2][2] = schwarz
+            
+formatted_traps = [[ 0 for _ in range(y)] for _ in range(x)]
 
 for i,j in traps:
     maze1[i][j][1][1] = red
@@ -72,10 +75,94 @@ for i,j in traps:
     maze1[i][j][2][0] = red
     maze1[i][j][0][2] = red
     maze1[i][j][2][2] = red
+    formatted_traps[i][j] = 1
+    
+pfad = "||>^^>||"
+
+last_x = 0
+last_y = 0
+akk_x = 0
+akk_y = 0
+
+for i in pfad:
+    if i == "^":
+        if akk_y > 0:
+            if formatted_walls_h[akk_x][akk_y-1] == 0:
+                if formatted_traps[akk_x][akk_y-1] == 1:
+                    last_x = akk_x
+                    last_y = akk_y
+                    maze1[akk_x][akk_y-1][1][0] = red
+                    maze1[akk_x][akk_y-1][0][1] = red
+                    maze1[akk_x][akk_y-1][1][2] = red
+                    maze1[akk_x][akk_y-1][2][1] = red
+                    akk_y = 0
+                    akk_x = 0
+                else:
+                    last_x = akk_x
+                    last_y = akk_y
+                    maze1[akk_x][akk_y][1][1] = grün
+                    maze1[akk_x][akk_y][0][1] = grün
+                    maze1[akk_x][akk_y-1][2][1] = grün
+                    akk_y -= 1
+    elif i == ">":
+        if formatted_walls_v[akk_x][akk_y] == 0:
+            if formatted_traps[akk_x+1][akk_y] == 1:
+                last_x = akk_x
+                last_y = akk_y
+                maze1[akk_x+1][akk_y][1][0] = red
+                maze1[akk_x+1][akk_y][0][1] = red
+                maze1[akk_x+1][akk_y][1][2] = red
+                maze1[akk_x+1][akk_y][2][1] = red
+                akk_x = 0
+                akk_y = 0
+            else:
+                last_x = akk_x
+                last_y = akk_y
+                maze1[akk_x][akk_y][1][1] = grün
+                maze1[akk_x][akk_y][1][2] = grün
+                maze1[akk_x+1][akk_y][1][0] = grün
+                akk_x += 1
+    elif i == "|":
+        if formatted_walls_h[akk_x][akk_y] == 0:
+            if formatted_traps[akk_x][akk_y+1] == 1:
+                last_x = akk_x
+                last_y = akk_y
+                maze1[akk_x][akk_y+1][1][0] = red
+                maze1[akk_x][akk_y+1][0][1] = red
+                maze1[akk_x][akk_y+1][1][2] = red
+                maze1[akk_x][akk_y+1][2][1] = red
+                akk_x = 0
+                akk_y = 0
+            else:
+                last_x = akk_x
+                last_y = akk_y
+                maze1[akk_x][akk_y][1][1] = grün
+                maze1[akk_x][akk_y][2][1] = grün
+                maze1[akk_x][akk_y+1][0][1] = grün
+                akk_y += 1
+    elif i == "<":
+        if akk_x > 0:
+            if formatted_walls_v[akk_x-1][akk_y] == 0:
+                if formatted_traps[akk_x-1][akk_y] == 1:
+                    last_x = akk_x
+                    last_y = akk_y
+                    maze1[akk_x-1][akk_y][1][0] = red
+                    maze1[akk_x-1][akk_y][0][1] = red
+                    maze1[akk_x-1][akk_y][1][2] = red
+                    maze1[akk_x-1][akk_y][2][1] = red
+                    akk_x = 0
+                    akk_y = 0
+                else:
+                    last_x = akk_x
+                    last_y = akk_y
+                    maze1[akk_x][akk_y][1][1] = grün
+                    maze1[akk_x][akk_y][1][0] = grün
+                    maze1[akk_x-1][akk_y][1][2] = grün
+                    akk_x -= 1
 
 
 
-with open(f"mazes\\{input[4:16]}_mase.ppm", "w") as file:
+with open(f"mazes\\{input[4:16]}_maze.ppm", "w") as file:
     string = ""
     file.write("P3\n")
     file.write(f"{3*x} {3*y}\n")
