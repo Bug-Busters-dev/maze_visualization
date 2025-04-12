@@ -1,5 +1,15 @@
+import sys
 
+# python maze_visualization.py <Pfad_zur_Eingabedatei> <Pfadfolge>
+
+# Standardwerte
 input = "data\\labyrinthe0.txt"
+pfad = "||>^^>||"
+
+if len(sys.argv) > 1:
+    input = sys.argv[1]
+if len(sys.argv) > 2:
+    pfad = sys.argv[2]
 
 with open(input, "r") as file:
     lines = file.readlines()
@@ -76,8 +86,6 @@ for i,j in traps:
     maze1[i][j][0][2] = red
     maze1[i][j][2][2] = red
     formatted_traps[i][j] = 1
-    
-pfad = "||>^^>||"
 
 last_x = 0
 last_y = 0
