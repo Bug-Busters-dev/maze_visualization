@@ -3,8 +3,8 @@ import sys
 # python maze_visualization.py <Pfad_zur_Eingabedatei> <Pfadfolge>
 
 # Standardwerte
-input = "data\\labyrinthe0.txt"
-pfad = "||>^^>||"
+input = "data\\labyrinthe6.txt"
+pfad = ">>>||||||||>>|>||>>>|>|>>^>>||>>>||||<<|<||>|||||>|>||<||>>>^^>>>|>>>>>>>^>>|>>^>^>>|>>>>>>|||>>>>||>>>>>>||||<|<<|<||>>|||||>>||>>|>>>>|>>>>||>>|>>>^^<^^^^>>^^^^>>>>>|>>|>|>>>||>>>^>^>^>>^>>>>|>|>|>|||>>>>|>||<<<<||||>|||<|||>|>||||>>>>|>>>||>>|>|>>>||||<||||<<<||<||>|>|>>>>>>>>>^^>>>|>|>|>|>>>|||||>|>>>>||||||>>|>|>|||>>^>>>>>^^>>>^>>||||<||>>^>>|||||>>|||||<|||<||||<<<<|||>|>>|||>>>>|>||<||>>|>>||>>^^>>>||||||<||>>>|>>||>>>^>^>^^^^^>^>>^>>|>>>||>>||>>^>^^>>>^>>^>^^<^^>>^>>>||>>>>>>|||>|||||||>|>>||>>^>>||<|<|<<|<||>>>^>>|||>>>>^^>>>>^>>>>|>||>>^^>^^^>>|>|>>>|>>|||<|<|<<<<<|<<||<|||<<|<|<<<|<||>||<<||>>>||||||||||>|||>||>||<||>>||<|<|||>>^^>>||||>>^>>^^>>>>^^<^^>>|>>|||>>>|||>|>>>>|>>>^^>>>|||||>>>||||<||<||||||>>||<|<|||||<|<||<|||<|||||||>>|||<|<<||>||>>>>^^>>||>>>>>>>>>>>>>>>|>>>>^>>|||>|>>^>>>||>||<||>|>>|>>^>^>^>^>>||>>|>|>|>>>^^^>>>|||||>>>^>>|>|||>>^^^^>>|>|>>>^^>>||>>>>>^^>>>^^<^^>>>>||||||>>>>|>|>>>||<|||>>>>>||>||<<|||||>|>|||||>|>>^>>>>>>>||>>^^^^>>^^<^^>>>>>^^>>>^^>>||||||||>>||<||<||||>||||||>>|>|>|||>>^^^^>>>>|>|||||<<|<|||<|<<<<|<||||>>>>>|||||>>>|||<|||>>>||<|||<<|<<<<|<|<|||<<||||>|>|||>>>>>>^^>>>|>>^>^>>^>>^^^>^^^^<^^<^<^^>>>^>>^^>>>^>>^^<<^^^^>^^>^>^>^^^^>>>>^^<^<^^>>^^^^^>>>|>>>>>^^>>^>^^<<^^^>^>^>>>>>^>>|||>>>||<|||<||>||>>>^^^>>>>>||<|<||>|>>^^>^>>||>>||||<||<<|<<||>>>||<||||||>||<||||<<<<||<<|<||<<<<||<<||>>>|>>|>|>>^>^>>>^>>>>||||>>|>>||||||<||<||||>>||<|||<|||<<||||>>||>|||<<<|<<<^^<<<||>|>||||||>>>>>>|||>||>>>>|||<<||<<<|||>>>>||>>>^>>^>^>>>>>^>>|>>|||<|<<|||||>>>|||<<<|<|<<<<||||<<^^^^<<|<<|<||||<<||>|>>|>>^>^>>|>>||||||||>||<<<||>>>>>>||>||>>>>>>^^^>>^>>>>|>>>>^^>>|>>|>>>>^^>>^>>>|>>|||>|>||<||<<|||<||||<<<^<<<<<||||<||<||||<<^<<<<|<|<||>|>|>||<<|<<<^<<^<<|<||<||||>>^>>>|>>||>>||<|||||>||||>>>>>|>>>>>>^^>^^>^>>||>|||||||>||>|>>>^^>>>|>|>>^>>^>^>>>>||>>||<|||<|||<||>>||<<<<<||>>|>>>|>>^^>>>||"
 
 if len(sys.argv) > 1:
     input = sys.argv[1]
@@ -74,9 +74,9 @@ def process_maze(start_line, offset_x):
 
     return start_line + 2 * y + number_traps, formatted_walls_h, formatted_walls_v, formatted_traps
 
-def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1, offset_x):
-    akk_x = 0
-    akk_y = 0
+def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1, offset_x, start_coords, end_coords):
+    akk_x, akk_y = start_coords
+    end_x, end_y = end_coords
 
     for i in pfad:
         if i == "^":
@@ -137,6 +137,8 @@ def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1
                         maze1[akk_x + offset_x][akk_y][1][0] = grün
                         maze1[akk_x-1 + offset_x][akk_y][1][2] = grün
                         akk_x -= 1
+        if akk_x == end_x and akk_y == end_y:
+            break
                         
 def draw_start_and_end(maze, x, y, offset_x, start_coords, end_coords):
     start_x, start_y = start_coords
@@ -157,26 +159,21 @@ def draw_start_and_end(maze, x, y, offset_x, start_coords, end_coords):
     maze[end_x + offset_x][end_y][2][1] = mintgrün
 
 
-# Process the first maze and draw the path
-next_start_line, formatted_walls_h, formatted_walls_v, formatted_traps = process_maze(1, 0)
-draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze, 0)
+# Process the first maze
+next_start_line, one_formatted_walls_h, one_formatted_walls_v, one_formatted_traps = process_maze(1, 0)
 
-# Process the second maze and draw the path
-next_start_line, formatted_walls_h, formatted_walls_v, formatted_traps = process_maze(next_start_line, x + 2)
-draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze, x + 2)
+# Process the second maze
+next_start_line, two_formatted_walls_h, two_formatted_walls_v, two_formatted_traps = process_maze(next_start_line, x + 2)
 
 if len(lines) > next_start_line:
     # Read start and end points for the first maze
     start_coords_maze1 = [int(lines[next_start_line].split(" ")[0]), int(lines[next_start_line].split(" ")[1])]
-    end_coords_maze1 = [int(lines[next_start_line + 1].split(" ")[0]), int(lines[next_start_line + 1].split(" ")[1])]
+    start_coords_maze2 = [int(lines[next_start_line + 1].split(" ")[0]), int(lines[next_start_line + 1].split(" ")[1])]
 
     # Read start and end points for the second maze
-    start_coords_maze2 = [int(lines[next_start_line + 2].split(" ")[0]), int(lines[next_start_line + 2].split(" ")[1])]
+    end_coords_maze1 = [int(lines[next_start_line + 2].split(" ")[0]), int(lines[next_start_line + 2].split(" ")[1])]
     end_coords_maze2 = [int(lines[next_start_line + 3].split(" ")[0]), int(lines[next_start_line + 3].split(" ")[1])]
 
-    # Draw start and end points for both mazes
-    draw_start_and_end(maze, x, y, 0, start_coords_maze1, end_coords_maze1)
-    draw_start_and_end(maze, x, y, x + 2, start_coords_maze2, end_coords_maze2)
 else:
     # Default start and end points if not specified
     start_coords_maze1 = [0, 0]
@@ -184,8 +181,11 @@ else:
     start_coords_maze2 = [0, 0]
     end_coords_maze2 = [x-1, y-1]
 
-    draw_start_and_end(maze, x, y, 0, start_coords_maze1, end_coords_maze1)
-    draw_start_and_end(maze, x, y, x + 2, start_coords_maze2, end_coords_maze2)
+draw_start_and_end(maze, x, y, 0, start_coords_maze1, end_coords_maze1)
+draw_start_and_end(maze, x, y, x + 2, start_coords_maze2, end_coords_maze2)
+
+draw_path(pfad, one_formatted_walls_h, one_formatted_walls_v, one_formatted_traps, maze, 0, start_coords_maze1, end_coords_maze1)
+draw_path(pfad, two_formatted_walls_h, two_formatted_walls_v, two_formatted_traps, maze, x + 2, start_coords_maze2, end_coords_maze2)
 
 def render_4d_list(data):
     x = len(data)
