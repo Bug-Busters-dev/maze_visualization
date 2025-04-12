@@ -21,6 +21,8 @@ red =   "255 0   0   "
 white = "255 255 255 "
 schwarz = "0   0   0   "
 grün =  "0   255 0   "
+mintgrün = "0   255 255 "
+pink =  "255 0   255 "
 
 # Adjust maze to handle two mazes with a gap
 maze = [[[[white for _ in range(3)] for _ in range(3)] for _ in range(y)] for _ in range(2 * x + 2)]
@@ -58,6 +60,20 @@ def process_maze(start_line, offset_x):
         maze[0 + offset_x][j][0][0] = schwarz
         maze[0 + offset_x][j][1][0] = schwarz
         maze[0 + offset_x][j][2][0] = schwarz
+        
+    # Draw start
+    maze[0 + offset_x][0][1][1] = pink
+    maze[0 + offset_x][0][1][0] = pink
+    maze[0 + offset_x][0][1][2] = pink
+    maze[0 + offset_x][0][0][1] = pink
+    maze[0 + offset_x][0][2][1] = pink
+    
+    # Draw end
+    maze[x - 1 + offset_x][y - 1][1][1] = mintgrün
+    maze[x - 1 + offset_x][y - 1][1][0] = mintgrün
+    maze[x - 1 + offset_x][y - 1][1][2] = mintgrün
+    maze[x - 1 + offset_x][y - 1][0][1] = mintgrün
+    maze[x - 1 + offset_x][y - 1][2][1] = mintgrün
  
     # Draw traps
     formatted_traps = [[0 for _ in range(y)] for _ in range(x)]
