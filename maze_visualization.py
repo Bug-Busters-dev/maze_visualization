@@ -166,17 +166,26 @@ next_start_line, formatted_walls_h, formatted_walls_v, formatted_traps = process
 draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze, x + 2)
 
 if len(lines) > next_start_line:
-    start_coords = [int(lines[next_start_line].split(" ")[0]), int(lines[next_start_line].split(" ")[1])]
-    end_coords = [int(lines[next_start_line + 1].split(" ")[0]), int(lines[next_start_line + 1].split(" ")[1])]
+    # Read start and end points for the first maze
+    start_coords_maze1 = [int(lines[next_start_line].split(" ")[0]), int(lines[next_start_line].split(" ")[1])]
+    end_coords_maze1 = [int(lines[next_start_line + 1].split(" ")[0]), int(lines[next_start_line + 1].split(" ")[1])]
 
-    # Draw start and end points
-    draw_start_and_end(maze, x, y, 0, start_coords, end_coords)
-    draw_start_and_end(maze, x, y, x + 2, start_coords, end_coords)
+    # Read start and end points for the second maze
+    start_coords_maze2 = [int(lines[next_start_line + 2].split(" ")[0]), int(lines[next_start_line + 2].split(" ")[1])]
+    end_coords_maze2 = [int(lines[next_start_line + 3].split(" ")[0]), int(lines[next_start_line + 3].split(" ")[1])]
+
+    # Draw start and end points for both mazes
+    draw_start_and_end(maze, x, y, 0, start_coords_maze1, end_coords_maze1)
+    draw_start_and_end(maze, x, y, x + 2, start_coords_maze2, end_coords_maze2)
 else:
-    start_coords = [0, 0]
-    end_coords = [x-1, y-1]
-    draw_start_and_end(maze, x, y, 0, start_coords, end_coords)
-    draw_start_and_end(maze, x, y, x + 2, start_coords, end_coords)
+    # Default start and end points if not specified
+    start_coords_maze1 = [0, 0]
+    end_coords_maze1 = [x-1, y-1]
+    start_coords_maze2 = [0, 0]
+    end_coords_maze2 = [x-1, y-1]
+
+    draw_start_and_end(maze, x, y, 0, start_coords_maze1, end_coords_maze1)
+    draw_start_and_end(maze, x, y, x + 2, start_coords_maze2, end_coords_maze2)
 
 def render_4d_list(data):
     x = len(data)
