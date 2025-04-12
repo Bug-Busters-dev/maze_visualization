@@ -47,7 +47,18 @@ def process_maze(start_line, offset_x):
                 maze[i + offset_x][j][2][0] = schwarz
                 maze[i + offset_x][j][2][1] = schwarz
                 maze[i + offset_x][j][2][2] = schwarz
-
+                
+    # Draw borders
+    for i in range(x):
+        maze[i + offset_x][0][0][0] = schwarz
+        maze[i + offset_x][0][0][1] = schwarz
+        maze[i + offset_x][0][0][2] = schwarz
+    
+    for j in range(y):
+        maze[0 + offset_x][j][0][0] = schwarz
+        maze[0 + offset_x][j][1][0] = schwarz
+        maze[0 + offset_x][j][2][0] = schwarz
+ 
     # Draw traps
     formatted_traps = [[0 for _ in range(y)] for _ in range(x)]
     for i, j in traps:
