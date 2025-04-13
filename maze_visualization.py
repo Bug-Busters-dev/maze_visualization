@@ -3,8 +3,8 @@ import sys
 # python maze_visualization.py <Pfad_zur_Eingabedatei> <Pfadfolge>
 
 # Standardwerte
-input = "data\\labyrinthe6.txt"
-pfad = ">>>||||||||>>|>||>>>|>|>>^>>||>>>||||<<|<||>|||||>|>||<||>>>^^>>>|>>>>>>>^>>|>>^>^>>|>>>>>>|||>>>>||>>>>>>||||<|<<|<||>>|||||>>||>>|>>>>|>>>>||>>|>>>^^<^^^^>>^^^^>>>>>|>>|>|>>>||>>>^>^>^>>^>>>>|>|>|>|||>>>>|>||<<<<||||>|||<|||>|>||||>>>>|>>>||>>|>|>>>||||<||||<<<||<||>|>|>>>>>>>>>^^>>>|>|>|>|>>>|||||>|>>>>||||||>>|>|>|||>>^>>>>>^^>>>^>>||||<||>>^>>|||||>>|||||<|||<||||<<<<|||>|>>|||>>>>|>||<||>>|>>||>>^^>>>||||||<||>>>|>>||>>>^>^>^^^^^>^>>^>>|>>>||>>||>>^>^^>>>^>>^>^^<^^>>^>>>||>>>>>>|||>|||||||>|>>||>>^>>||<|<|<<|<||>>>^>>|||>>>>^^>>>>^>>>>|>||>>^^>^^^>>|>|>>>|>>|||<|<|<<<<<|<<||<|||<<|<|<<<|<||>||<<||>>>||||||||||>|||>||>||<||>>||<|<|||>>^^>>||||>>^>>^^>>>>^^<^^>>|>>|||>>>|||>|>>>>|>>>^^>>>|||||>>>||||<||<||||||>>||<|<|||||<|<||<|||<|||||||>>|||<|<<||>||>>>>^^>>||>>>>>>>>>>>>>>>|>>>>^>>|||>|>>^>>>||>||<||>|>>|>>^>^>^>^>>||>>|>|>|>>>^^^>>>|||||>>>^>>|>|||>>^^^^>>|>|>>>^^>>||>>>>>^^>>>^^<^^>>>>||||||>>>>|>|>>>||<|||>>>>>||>||<<|||||>|>|||||>|>>^>>>>>>>||>>^^^^>>^^<^^>>>>>^^>>>^^>>||||||||>>||<||<||||>||||||>>|>|>|||>>^^^^>>>>|>|||||<<|<|||<|<<<<|<||||>>>>>|||||>>>|||<|||>>>||<|||<<|<<<<|<|<|||<<||||>|>|||>>>>>>^^>>>|>>^>^>>^>>^^^>^^^^<^^<^<^^>>>^>>^^>>>^>>^^<<^^^^>^^>^>^>^^^^>>>>^^<^<^^>>^^^^^>>>|>>>>>^^>>^>^^<<^^^>^>^>>>>>^>>|||>>>||<|||<||>||>>>^^^>>>>>||<|<||>|>>^^>^>>||>>||||<||<<|<<||>>>||<||||||>||<||||<<<<||<<|<||<<<<||<<||>>>|>>|>|>>^>^>>>^>>>>||||>>|>>||||||<||<||||>>||<|||<|||<<||||>>||>|||<<<|<<<^^<<<||>|>||||||>>>>>>|||>||>>>>|||<<||<<<|||>>>>||>>>^>>^>^>>>>>^>>|>>|||<|<<|||||>>>|||<<<|<|<<<<||||<<^^^^<<|<<|<||||<<||>|>>|>>^>^>>|>>||||||||>||<<<||>>>>>>||>||>>>>>>^^^>>^>>>>|>>>>^^>>|>>|>>>>^^>>^>>>|>>|||>|>||<||<<|||<||||<<<^<<<<<||||<||<||||<<^<<<<|<|<||>|>|>||<<|<<<^<<^<<|<||<||||>>^>>>|>>||>>||<|||||>||||>>>>>|>>>>>>^^>^^>^>>||>|||||||>||>|>>>^^>>>|>|>>^>>^>^>>>>||>>||<|||<|||<||>>||<<<<<||>>|>>>|>>^^>>>||"
+input = "data\\labyrintheJ copy.txt"
+pfad = ">>>>>>>>>|||||||||"
 
 if len(sys.argv) > 1:
     input = sys.argv[1]
@@ -32,12 +32,16 @@ def process_maze(start_line, offset_x):
     walls_v = [[int(lines[start_line + i].split(" ")[j]) for j in range(x-1)] for i in range(y)]
     walls_h = [[int(lines[start_line + y + i].split(" ")[j]) for j in range(x)] for i in range(y-1)]
     number_traps = int(lines[start_line + 2 * y - 1])
-    traps = [[int(part.replace("\n", "")) for part in trap.split(" ")] for trap in lines[start_line + 2 * y:number_traps + start_line + 2 * y]]
+    traps = [[int(trap.split(" ")[0]), int(trap.split(" ")[1])] for trap in lines[start_line + 2 * y:number_traps + start_line + 2 * y]]
+    
+    trapCords = []
+    if len(traps) > 0:
+        if len(lines[start_line + 2 * y:number_traps + start_line + 2 * y][0].split(" ")) > 2:
+            trapCords = [[int(trap.split(" ")[2]), int(trap.split(" ")[3])] for trap in lines[start_line + 2 * y:number_traps + start_line + 2 * y]]
 
     # Format walls
     formatted_walls_v = [[walls_v[j][i] for j in range(y)] for i in range(x-1)] + [[1 for _ in range(y)]]
     formatted_walls_h = [[walls_h[j][i] for j in range(y-1)] + [1] for i in range(x)]
-
     # Draw walls
     for i in range(x):
         for j in range(y):
@@ -71,24 +75,32 @@ def process_maze(start_line, offset_x):
         maze[i + offset_x][j][0][2] = red
         maze[i + offset_x][j][2][2] = red
         formatted_traps[i][j] = 1
+        
+    formatted_trapCords = [[[0 for _ in range(2)] for _ in range(y)] for _ in range(x)]
+    for i in range(len(trapCords)):
+        formatted_trapCords[traps[i][0]][traps[i][1]][0] = trapCords[i][0]
+        formatted_trapCords[traps[i][0]][traps[i][1]][1] = trapCords[i][1]
 
-    return start_line + 2 * y + number_traps, formatted_walls_h, formatted_walls_v, formatted_traps
+    return start_line + 2 * y + number_traps, formatted_walls_h, formatted_walls_v, formatted_traps, formatted_trapCords
 
-def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1, offset_x, start_coords, end_coords):
+def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1, offset_x, start_coords, end_coords, formatted_trapCords):
     akk_x, akk_y = start_coords
     end_x, end_y = end_coords
+    last_x, last_y = start_coords
 
     for i in pfad:
         if i == "^":
             if akk_y > 0:
                 if formatted_walls_h[akk_x][akk_y-1] == 0:
                     if formatted_traps[akk_x][akk_y-1] == 1:
-                        maze1[akk_x + offset_x][akk_y-1][1][0] = red
-                        maze1[akk_x + offset_x][akk_y-1][0][1] = red
-                        maze1[akk_x + offset_x][akk_y-1][1][2] = red
-                        maze1[akk_x + offset_x][akk_y-1][2][1] = red
-                        akk_y = 0
-                        akk_x = 0
+                        last_x = akk_x
+                        last_y = akk_y
+                        maze1[last_x + offset_x][last_y-1][1][0] = red
+                        maze1[last_x + offset_x][last_y-1][0][1] = red
+                        maze1[last_x + offset_x][last_y-1][1][2] = red
+                        maze1[last_x + offset_x][last_y-1][2][1] = red
+                        akk_y = formatted_trapCords[last_x][last_y-1][1]
+                        akk_x = formatted_trapCords[last_x][last_y-1][0]
                     else:
                         maze1[akk_x + offset_x][akk_y][1][1] = grün
                         maze1[akk_x + offset_x][akk_y][0][1] = grün
@@ -97,12 +109,14 @@ def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1
         elif i == ">":
             if formatted_walls_v[akk_x][akk_y] == 0:
                 if formatted_traps[akk_x+1][akk_y] == 1:
-                    maze1[akk_x+1 + offset_x][akk_y][1][0] = red
-                    maze1[akk_x+1 + offset_x][akk_y][0][1] = red
-                    maze1[akk_x+1 + offset_x][akk_y][1][2] = red
-                    maze1[akk_x+1 + offset_x][akk_y][2][1] = red
-                    akk_x = 0
-                    akk_y = 0
+                    last_x = akk_x
+                    last_y = akk_y
+                    maze1[last_x+1 + offset_x][last_y][1][0] = red
+                    maze1[last_x+1 + offset_x][last_y][0][1] = red
+                    maze1[last_x+1 + offset_x][last_y][1][2] = red
+                    maze1[last_x+1 + offset_x][last_y][2][1] = red
+                    akk_x = formatted_trapCords[last_x+1][last_y][0]
+                    akk_y = formatted_trapCords[last_x+1][last_y][1]
                 else:
                     maze1[akk_x + offset_x][akk_y][1][1] = grün
                     maze1[akk_x + offset_x][akk_y][1][2] = grün
@@ -111,12 +125,14 @@ def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1
         elif i == "|":
             if formatted_walls_h[akk_x][akk_y] == 0:
                 if formatted_traps[akk_x][akk_y+1] == 1:
+                    last_x = akk_x
+                    last_y = akk_y
                     maze1[akk_x + offset_x][akk_y+1][1][0] = red
                     maze1[akk_x + offset_x][akk_y+1][0][1] = red
                     maze1[akk_x + offset_x][akk_y+1][1][2] = red
                     maze1[akk_x + offset_x][akk_y+1][2][1] = red
-                    akk_x = 0
-                    akk_y = 0
+                    akk_x = formatted_trapCords[last_x][last_y+1][0]
+                    akk_y = formatted_trapCords[last_x][last_y+1][1]
                 else:
                     maze1[akk_x + offset_x][akk_y][1][1] = grün
                     maze1[akk_x + offset_x][akk_y][2][1] = grün
@@ -126,12 +142,14 @@ def draw_path(pfad, formatted_walls_h, formatted_walls_v, formatted_traps, maze1
             if akk_x > 0:
                 if formatted_walls_v[akk_x-1][akk_y] == 0:
                     if formatted_traps[akk_x-1][akk_y] == 1:
-                        maze1[akk_x-1 + offset_x][akk_y][1][0] = red
-                        maze1[akk_x-1 + offset_x][akk_y][0][1] = red
-                        maze1[akk_x-1 + offset_x][akk_y][1][2] = red
-                        maze1[akk_x-1 + offset_x][akk_y][2][1] = red
-                        akk_x = 0
-                        akk_y = 0
+                        last_x = akk_x
+                        last_y = akk_y
+                        maze1[last_x-1 + offset_x][last_y][1][0] = red
+                        maze1[last_x-1 + offset_x][last_y][0][1] = red
+                        maze1[last_x-1 + offset_x][last_y][1][2] = red
+                        maze1[last_x-1 + offset_x][last_y][2][1] = red
+                        akk_x = formatted_trapCords[last_x-1][last_y][0]
+                        akk_y = formatted_trapCords[last_x-1][last_y][1]
                     else:
                         maze1[akk_x + offset_x][akk_y][1][1] = grün
                         maze1[akk_x + offset_x][akk_y][1][0] = grün
@@ -160,10 +178,10 @@ def draw_start_and_end(maze, x, y, offset_x, start_coords, end_coords):
 
 
 # Process the first maze
-next_start_line, one_formatted_walls_h, one_formatted_walls_v, one_formatted_traps = process_maze(1, 0)
+next_start_line, one_formatted_walls_h, one_formatted_walls_v, one_formatted_traps, one_formatted_trapCords = process_maze(1, 0)
 
 # Process the second maze
-next_start_line, two_formatted_walls_h, two_formatted_walls_v, two_formatted_traps = process_maze(next_start_line, x + 2)
+next_start_line, two_formatted_walls_h, two_formatted_walls_v, two_formatted_traps, two_formatted_trapCords = process_maze(next_start_line, x + 2)
 
 if len(lines) > next_start_line:
     # Read start and end points for the first maze
@@ -184,8 +202,8 @@ else:
 draw_start_and_end(maze, x, y, 0, start_coords_maze1, end_coords_maze1)
 draw_start_and_end(maze, x, y, x + 2, start_coords_maze2, end_coords_maze2)
 
-draw_path(pfad, one_formatted_walls_h, one_formatted_walls_v, one_formatted_traps, maze, 0, start_coords_maze1, end_coords_maze1)
-draw_path(pfad, two_formatted_walls_h, two_formatted_walls_v, two_formatted_traps, maze, x + 2, start_coords_maze2, end_coords_maze2)
+draw_path(pfad, one_formatted_walls_h, one_formatted_walls_v, one_formatted_traps, maze, 0, start_coords_maze1, end_coords_maze1, one_formatted_trapCords)
+draw_path(pfad, two_formatted_walls_h, two_formatted_walls_v, two_formatted_traps, maze, x + 2, start_coords_maze2, end_coords_maze2, two_formatted_trapCords)
 
 def render_4d_list(data):
     x = len(data)
