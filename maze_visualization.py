@@ -9,7 +9,9 @@ pfad = ">>>>>>>>>|||||||||"
 if len(sys.argv) > 1:
     input = sys.argv[1]
 if len(sys.argv) > 2:
-    pfad = sys.argv[2]
+    method = sys.argv[2]
+if len(sys.argv) > 3:
+    pfad = sys.argv[3]
 
 with open(input, "r") as file:
     lines = file.readlines()
@@ -221,7 +223,7 @@ def render_4d_list(data):
 
     return "\n".join(output_lines)
 
-with open(f"mazes\\{input[4:16]}_maze.ppm", "w") as file:
+with open(f"mazes\\{input[4:16]}_{method}_maze.ppm", "w") as file:
     file.write("P3\n")
     file.write(f"{3 * (2 * x + 2)} {3 * y}\n")
     file.write("255\n")
