@@ -239,7 +239,7 @@ if usedPlats != None:
                     maze[plait[4]][plait[5]][2][0] = blau
                     maze[plait[4]][plait[5]][2][1] = blau
                     maze[plait[4]][plait[5]][2][2] = blau
-                    opne_formatted_walls_h[plait[4]][plait[5]] = 1
+                    one_formatted_walls_h[plait[4]][plait[5]] = 1
             elif plait[3] == 2:
                 if plait[6] == 1:
                     maze[plait[4] + offset_x][plait[5]][0][2] = white
