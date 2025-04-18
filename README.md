@@ -11,11 +11,13 @@ This script is a custom renderer for the [A2_Simultane-Labyrinthe](https://githu
 Run the script with the following command:
 
 ```bash
-python maze_visualization.py <input_file_path> <path_sequence>
+python maze_visualization.py <input_file_path> <method> <path_sequence> <usedPlates>
 ```
 
 - `<input_file_path>`: Path to the input file describing the maze.
+- `<method>`: The usen of the algo used.
 - `<path_sequence>`: Sequence of moves through the maze (e.g., `||>^^>||`).
+- `<usedPlates>`: The Plates activateet in the run `(e.g., 1 1 1 2 1 1 3 ,...)`
 
 If no arguments are provided, the script uses default values:
 - Input file: `data\labyrinthe0.txt`
@@ -24,6 +26,14 @@ If no arguments are provided, the script uses default values:
 ## Output
 
 The script generates a PPM image file representing the maze and the path. The output file is saved in the `mazes` directory with a name based on the input file.
+
+- The walls are painted in black.
+- The start is a pink cross.
+- The end is a cyan cross.
+- Pits are depicted with a red x.
+- The path is in green.
+- Plates are orange.
+- The walls added by the Plates are blue.
 
 ## Example
 
