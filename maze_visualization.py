@@ -3,8 +3,8 @@ import sys
 # python maze_visualization.py <Pfad_zur_Eingabedatei> <Pfadfolge>
 
 # Standardwerte
-input = "data\\labyrintheJ copy.txt"
-pfad = ">>>>>>>>>|||||||||"
+
+usedPlats = None
 
 if len(sys.argv) > 1:
     input = sys.argv[1]
@@ -12,6 +12,8 @@ if len(sys.argv) > 2:
     method = sys.argv[2]
 if len(sys.argv) > 3:
     pfad = sys.argv[3]
+if len(sys.argv) > 4 and sys.argv[4] != "":
+    usedPlats = sys.argv[4].split(",")
 
 with open(input, "r") as file:
     lines = file.readlines()
@@ -19,12 +21,14 @@ with open(input, "r") as file:
     y = int(y)
     x = int(x)
 
-red =   "255 0   0   "
-white = "255 255 255 "
-schwarz = "0   0   0   "
-grün =  "0   255 0   "
-mintgrün = "0   255 255 "
-pink =  "255 0   255 "
+red       = "255 0   0"
+white     = "255 255 255"
+schwarz   = "0   0   0"
+grün      = "0   255 0"
+mintgrün  = "0   255 255"
+pink      = "255 0   255"
+blau      = "0   0   255"
+orange    = "255 165 0"
 
 # Adjust maze to handle two mazes with a gap
 maze = [[[[white for _ in range(3)] for _ in range(3)] for _ in range(y)] for _ in range(2 * x + 2)]
@@ -200,6 +204,59 @@ else:
     end_coords_maze1 = [x-1, y-1]
     start_coords_maze2 = [0, 0]
     end_coords_maze2 = [x-1, y-1]
+    
+if usedPlats != None:
+    offset_x = x + 2
+
+    for i in range(len(usedPlats)):
+            plait = list(map(int, usedPlats[i].split()))
+            if plait[0] == 1:
+                maze[plait[1]][plait[2]][1][1] = orange
+                maze[plait[1]][plait[2]][1][0] = orange
+                maze[plait[1]][plait[2]][1][2] = orange
+                maze[plait[1]][plait[2]][0][1] = orange
+                maze[plait[1]][plait[2]][2][1] = orange
+            elif plait[0] == 2:
+                maze[plait[1] + offset_x][plait[2]][2][1] = orange
+                maze[plait[1] + offset_x][plait[2]][0][1] = orange
+                maze[plait[1] + offset_x][plait[2]][1][0] = orange 
+                maze[plait[1] + offset_x][plait[2]][1][2] = orange
+                maze[plait[1] + offset_x][plait[2]][1][1] = orange
+            
+            if plait[3] == 1:
+                if plait[6] == 1:
+                    maze[plait[4]][plait[5]][0][2] = white
+                    maze[plait[4]][plait[5]][1][2] = white
+                    maze[plait[4]][plait[5]][2][2] = white
+                    maze[plait[4]][plait[5]][2][0] = white
+                    maze[plait[4]][plait[5]][2][1] = white
+                elif plait[6] == 2:
+                    maze[plait[4]][plait[5]][0][2] = blau
+                    maze[plait[4]][plait[5]][1][2] = blau
+                    maze[plait[4]][plait[5]][2][2] = blau
+                    one_formatted_walls_v[plait[4]][plait[5]] = 1
+                elif plait[6] == 3:
+                    maze[plait[4]][plait[5]][2][0] = blau
+                    maze[plait[4]][plait[5]][2][1] = blau
+                    maze[plait[4]][plait[5]][2][2] = blau
+                    opne_formatted_walls_h[plait[4]][plait[5]] = 1
+            elif plait[3] == 2:
+                if plait[6] == 1:
+                    maze[plait[4] + offset_x][plait[5]][0][2] = white
+                    maze[plait[4] + offset_x][plait[5]][1][2] = white
+                    maze[plait[4] + offset_x][plait[5]][2][2] = white
+                    maze[plait[4] + offset_x][plait[5]][2][0] = white
+                    maze[plait[4] + offset_x][plait[5]][2][1] = white
+                elif plait[6] == 2:
+                    maze[plait[4] + offset_x][plait[5]][0][2] = blau
+                    maze[plait[4] + offset_x][plait[5]][1][2] = blau
+                    maze[plait[4] + offset_x][plait[5]][2][2] = blau
+                    two_formatted_walls_v[plait[4]][plait[5]] = 1
+                elif plait[6] == 3:
+                    maze[plait[4] + offset_x][plait[5]][2][0] = blau
+                    maze[plait[4] + offset_x][plait[5]][2][1] = blau
+                    maze[plait[4] + offset_x][plait[5]][2][2] = blau
+                    two_formatted_walls_h[plait[4]][plait[5]] = 1
 
 draw_start_and_end(maze, x, y, 0, start_coords_maze1, end_coords_maze1)
 draw_start_and_end(maze, x, y, x + 2, start_coords_maze2, end_coords_maze2)
