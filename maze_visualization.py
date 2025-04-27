@@ -42,8 +42,10 @@ def process_maze(start_line, offset_x):
     
     trapCords = []
     if len(traps) > 0:
-        if len(lines[start_line + 2 * y:number_traps + start_line + 2 * y][0].split(" ")) > 2:
-            trapCords = [[int(trap.split(" ")[2]), int(trap.split(" ")[3])] for trap in lines[start_line + 2 * y:number_traps + start_line + 2 * y]]
+        for trap in lines[start_line + 2 * y:number_traps + start_line + 2 * y]:
+            if len(trap.split(" ")) > 2:
+                trap_parts = trap.split(" ")
+                trapCords.append([int(trap_parts[2]), int(trap_parts[3])])
 
     # Format walls
     formatted_walls_v = [[walls_v[j][i] for j in range(y)] for i in range(x-1)] + [[1 for _ in range(y)]]
